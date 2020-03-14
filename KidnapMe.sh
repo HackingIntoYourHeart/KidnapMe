@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "\nChecking for hostapd..."
+echo "\n\nChecking for hostapd..."
 if command -v hostapd > /dev/null 2>&1 ; then
     echo "hostapd is installed.\n"
 else
@@ -42,6 +42,20 @@ else
 	fi
 fi
 
+echo "Checking for xterm..."
+if command -v xterm > /dev/null 2>&1 ; then
+    echo "xterm is installed.\n"
+else
+    echo "xterm is NOT installed. Installing..."
+    apt-get install xterm > /dev/null 2>&1
+    if command -v xterm > /dev/null 2>&1 ; then
+		echo "xterm installed successfully.\n"
+	else
+		echo "xterm FAILED to install. Closing...\n"
+		exit
+	fi
+fi
+
 echo -n "\nSSID: "
 read SSID
 
@@ -56,8 +70,9 @@ echo -n "Gateway address (Blank for default): "
 read GATEWAY
 GATEWAY=${GATEWAY:-"192.168.1.1"}
 
-echo -n "Channel: "
+echo -n "Channel (Blank for default): "
 read CHANNEL
+CHANNEL=${CHANNEL:-"11"}
 
 echo -n "AP Interface: "
 read IFACE
@@ -103,9 +118,9 @@ echo "server=$GATEWAY" >> dnsmasq.conf
 sudo mv dnsmasq.conf /etc/dnsmasq.conf > /dev/null 2>&1
 
 sudo /etc/init.d/dnsmasq stop > /dev/null 2>&1
-sudo killall dnsmasq
-sudo pkill dnsmasq
-sudo dnsmasq 
+sudo killall dnsmasq > /dev/null 2>&1
+sudo pkill dnsmasq > /dev/null 2>&1
+sudo dnsmasq > /dev/null 2>&1
 
 echo -n "" > hostapd.conf
 echo "#################################" >> hostapd.conf
@@ -137,31 +152,34 @@ echo "logger_stdout=-1" >> hostapd.conf
 echo "logger_stdout_level=2" >> hostapd.conf
 echo "#################################" >> hostapd.conf
 
-
-#Not quite finished with this... UNDER CONSTRUCTION!!!
-#read -p "Deauth interface (Blank if no deauth): " DEAUTH
-#if [ -z "$DEAUTH" ]; then
-#	echo "No deauth-ing..."
-#else
-#	airmon-ng start $DEAUTH > /dev/null 2>&1
-#	DEAUTH="$DEAUTHmon"
-#	echo "RUNNING: airodump-ng $DEAUTH"
-#	gnome-terminal --command "airodump-ng $DEAUTH" > /dev/null 2>&1
-#	read -p "Target BSSID: " T_BSSID
-#	read -p "Target client (Blank if all): " T_MAC
-#	if [ -z "$T_MAC" ]; then
-#	echo "No target client..."
-#	else
-#		T_MAC=" -c $T_MAC "
-#	fi
-#	echo "RUNNING: aireplay-ng --deauth 1000 -a $T_BSSID $T_MAC --ignore-negative-one $DEAUTH"
-#	gnome-terminal --command "aireplay-ng --deauth 1000 -a $T_BSSID $T_MAC --ignore-negative-one $DEAUTH" > /dev/null 2>&1
-#fi
-
-
-
 #LET'S GO#
-#Loophole to allow for CTRL + C. Bash doesn't...
-python hostapd.py
-#LET'S GO#
+echo "Starting Hostapd..."
+xterm -e "cd $PWD; sudo hostapd hostapd.conf"
+#read -p "Press enter to quit: " unused
+
+sudo mv /etc/NetworkManager/NetworkManager.conf.backup /etc/NetworkManager/NetworkManager.conf > /dev/null 2>&1
+
+echo "" > /etc/NetworkManager/NetworkManager.conf
+echo "[main]" >> /etc/NetworkManager/NetworkManager.conf
+echo "plugins=keyfile" >> /etc/NetworkManager/NetworkManager.conf
+echo "" >> /etc/NetworkManager/NetworkManager.conf
+echo "[keyfile]" >> /etc/NetworkManager/NetworkManager.conf
+
+rm hostapd.conf > /dev/null 2>&1
+sudo service network-manager restart > /dev/null 2>&1
+sudo /etc/init.d/dnsmasq stop > /dev/null 2>&1
+sudo pkill dnsmasq
+sudo iptables --flush
+sudo iptables --flush -t nat
+sudo iptables --delete-chain
+sudo iptables --table nat --delete-chain
+iwconfig wlan0 mode managed > /dev/null 2>&1
+sudo ifconfig wlan0 up > /dev/null 2>&1
+iwconfig wlan1 mode managed > /dev/null 2>&1
+sudo ifconfig wlan1 up > /dev/null 2>&1
+iwconfig wlan2 mode managed > /dev/null 2>&1
+sudo ifconfig wlan2 up > /dev/null 2>&1
+airmon-ng stop wlan0mon > /dev/null 2>&1
+airmon-ng stop wlan1mon > /dev/null 2>&1
+airmon-ng stop wlan2mon > /dev/null 2>&1;
 #LET'S GO#
