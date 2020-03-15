@@ -154,9 +154,10 @@ echo "#################################" >> hostapd.conf
 
 #LET'S GO#
 echo "Starting Hostapd..."
-xterm -e "cd $PWD; sudo hostapd hostapd.conf"
+xterm -T "Kidnap Me!" -e "cd $PWD; sudo hostapd hostapd.conf"
 #read -p "Press enter to quit: " unused
 
+echo "Cleaning up..."
 sudo mv /etc/NetworkManager/NetworkManager.conf.backup /etc/NetworkManager/NetworkManager.conf > /dev/null 2>&1
 
 echo "" > /etc/NetworkManager/NetworkManager.conf
@@ -182,4 +183,4 @@ sudo ifconfig wlan2 up > /dev/null 2>&1
 airmon-ng stop wlan0mon > /dev/null 2>&1
 airmon-ng stop wlan1mon > /dev/null 2>&1
 airmon-ng stop wlan2mon > /dev/null 2>&1;
-#LET'S GO#
+echo "Closing..."
