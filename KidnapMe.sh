@@ -5,7 +5,7 @@ if command -v hostapd > /dev/null 2>&1 ; then
     echo "hostapd is installed.\n"
 else
     echo "hostapd is NOT installed. Installing..."
-    apt-get install hostapd > /dev/null 2>&1
+    apt-get install hostapd -y > /dev/null 2>&1
     if command -v hostapd > /dev/null 2>&1 ; then
 		echo "hostapd installed successfully.\n"
 	else
@@ -19,7 +19,7 @@ if command -v dnsmasq > /dev/null 2>&1 ; then
     echo "dnsmasq is installed.\n"
 else
     echo "dnsmasq is NOT installed. Installing..."
-    apt-get install dnsmasq > /dev/null 2>&1
+    apt-get install dnsmasq -y > /dev/null 2>&1
     if command -v dnsmasq > /dev/null 2>&1 ; then
 		echo "dnsmasq installed successfully.\n"
 	else
@@ -33,7 +33,7 @@ if command -v aircrack-ng > /dev/null 2>&1 ; then
     echo "aircrack-ng is installed.\n"
 else
     echo "aircrack-ng is NOT installed. Installing..."
-    apt-get install aircrack-ng > /dev/null 2>&1
+    apt-get install aircrack-ng -y > /dev/null 2>&1
     if command -v aircrack-ng > /dev/null 2>&1 ; then
 		echo "aircrack-ng installed successfully.\n"
 	else
@@ -47,7 +47,7 @@ if command -v xterm > /dev/null 2>&1 ; then
     echo "xterm is installed.\n"
 else
     echo "xterm is NOT installed. Installing..."
-    apt-get install xterm > /dev/null 2>&1
+    apt-get install xterm -y > /dev/null 2>&1
     if command -v xterm > /dev/null 2>&1 ; then
 		echo "xterm installed successfully.\n"
 	else
